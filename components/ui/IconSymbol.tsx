@@ -8,23 +8,32 @@ import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
 type IconSymbolName = keyof typeof MAPPING;
 
-/**
- * Add your SF Symbols to Material Icons mappings here.
- * - see Material Icons in the [Icons Directory](https://icons.expo.fyi).
- * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
- */
+
 const MAPPING = {
-  'house.fill': 'home',
-  'paperplane.fill': 'send',
-  'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
+  "house.fill": "home",
+  "paperplane.fill": "send",
+  "chevron.left.forwardslash.chevron.right": "code",
+  "chevron.right": "chevron-right",
+  "book.fill": "menu-book", // Book Catalog
+  "bookmark.fill": "bookmark", // My Books
+  "person.fill": "person",
+  "checkmark.circle.fill": "check-circle",
+  "chart.bar.fill": "bar-chart",
+  "exclamationmark.triangle.fill": "warning",
+  magnifyingglass: "search",
+  "arrow.clockwise": "autorenew",
+  "xmark.circle.fill": "cancel",
+  "person.circle": "account-circle",
+  xmark: "close",
+  book: "menu-book",
+  "exclamationmark.triangle": "warning",
+  clock: "schedule",
+  "heart.fill": "favorite",
+  target: "track-changes",
+  "questionmark.circle": "help",
+  "info.circle": "info",
 } as IconMapping;
 
-/**
- * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
- * This ensures a consistent look across platforms, and optimal resource usage.
- * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
- */
 export function IconSymbol({
   name,
   size = 24,

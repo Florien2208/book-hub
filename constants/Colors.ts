@@ -1,26 +1,32 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = "#6366f1"; // Modern indigo
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: "#1f2937", // Rich dark gray
+    background: "#ffffff",
+    backgroundSecondary: "#f8fafc", // Subtle gray background
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#6b7280", // Balanced gray
+    tabIconDefault: "#9ca3af",
     tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+
+    // Additional semantic colors
+    primary: "#6366f1", // Indigo
+    primaryLight: "#818cf8",
+    secondary: "#8b5cf6", // Purple
+    accent: "#06b6d4", // Cyan
+    success: "#10b981", // Emerald
+    warning: "#f59e0b", // Amber
+    error: "#ef4444", // Red
+
+    // Surface colors
+    card: "#ffffff",
+    cardBorder: "#e5e7eb",
+    muted: "#f3f4f6",
+    mutedForeground: "#6b7280",
+
+    // Interactive states
+    hover: "#f1f5f9",
+    pressed: "#e2e8f0",
   },
 };
