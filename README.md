@@ -1,50 +1,112 @@
-# Welcome to your Expo app 👋
+# BookHub 📚
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Smart Library Management System**
 
-## Get started
+Transform how you manage books with our intelligent platform. Perfect for libraries, bookstores, and personal collections.
 
-1. Install dependencies
+## ✨ Features
 
+- **📚 Complete Collection Management** - Organize your entire book collection with ease
+- **⏰ Borrowing Tracker** - Track borrowings and return dates efficiently  
+- **🔍 Smart Search** - Quick search functionality with intelligent filters
+- **📱 Mobile-First Design** - Beautiful, responsive interface built with React Native
+- **🎨 Modern UI/UX** - Clean, intuitive design with smooth animations
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js
+- Expo CLI
+- Expo Go app (for quick testing) OR Xcode/Android Studio (for full build)
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   npm install
+   git clone https://github.com/Florien2208/book-hub.git
+   cd bookhub
    ```
 
-2. Start the app
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
+3. **Run the app**
+
+   **Expo Go (Quick):**
    ```bash
    npx expo start
    ```
+   Scan QR code with Expo Go app
 
-In the output, you'll find options to open the app in a
+   **Development Build (Full features):**
+   ```bash
+   npx expo run:ios    # or run:android
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🛠️ Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Framework**: React Native with Expo
+- **Navigation**: Expo Router
+- **Styling**: NativeWind (Tailwind CSS for React Native)
+- **UI Components**: Custom components with React Native
+- **State Management**: React Hooks
+- **Platform**: iOS & Android
 
-## Get a fresh project
+## 📱 App Structure
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+bookhub/
+├── app/
+│   ├── (auth)/
+│   │   └── sign-up.tsx
+│   ├── (tabs)/
+│   └── Home.tsx
+├── assets/
+│   └── images/
+├── constants/
+│   └── Colors.ts
+└── components/
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+### Authentication
+- User registration and login
+- Secure authentication flow
 
-To learn more about developing your project with Expo, look at the following resources:
+### Main Application
+- Tab-based navigation
+- Library management interface
+- Book search and filtering
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📋 Core Functionality
 
-## Join the community
+### Borrowing System
+- Track who borrowed which books
+- Set and monitor return dates
+- Send reminders for overdue books
+- Maintain borrowing history
 
-Join our community of developers creating universal apps.
+### Search & Filter
+- Quick search by title, author, or ISBN
+- Advanced filtering options
+- Sort by various criteria
+- Export search results
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🔧 Configuration
+
+The app uses a color system defined in `constants/Colors.ts`. You can customize the theme by modifying the color values:
+
+```typescript
+
+
+
+## 🙏 Acknowledgments
+
+- Built with ❤️ using React Native and Expo
+- Icons and emojis from various open-source projects
+- Inspired by modern library management needs

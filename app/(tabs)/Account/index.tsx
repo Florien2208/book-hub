@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import { router } from "expo-router";
 
 // Import the SF Symbols type if available, or define a union type
 type SFSymbolName =
@@ -75,28 +76,28 @@ export default function Account(): React.JSX.Element {
     {
       id: 1,
       title: "Edit Profile",
-      icon: "person.circle" as const,
+      icon: "person.circle",
       onPress: (): void =>
         Alert.alert("Coming Soon", "Profile editing will be available soon!"),
     },
     {
       id: 2,
       title: "Reading History",
-      icon: "clock" as const,
+      icon: "clock",
       onPress: (): void =>
         Alert.alert("Reading History", "View your complete reading history."),
     },
     {
       id: 5,
       title: "Help & Support",
-      icon: "questionmark.circle" as const,
+      icon: "questionmark.circle",
       onPress: (): void =>
         Alert.alert("Support", "Contact our support team for assistance."),
     },
     {
       id: 6,
       title: "About",
-      icon: "info.circle" as const,
+      icon: "info.circle",
       onPress: (): void =>
         Alert.alert("About", "Library Management App v1.0.0"),
     },
@@ -122,8 +123,7 @@ export default function Account(): React.JSX.Element {
         text: "Sign Out",
         style: "destructive",
         onPress: (): void => {
-          // Add sign out logic here
-          console.log("User signed out");
+          router.push("/home"); // Try push first
         },
       },
     ]);
@@ -131,65 +131,103 @@ export default function Account(): React.JSX.Element {
 
   return (
     <SafeAreaView
-      className="flex-1"
-      style={{ backgroundColor: Colors.light.background }}
+      style={{
+        flex: 1,
+        backgroundColor: Colors.light.background,
+      }}
     >
       <StatusBar
         barStyle="dark-content"
         backgroundColor={Colors.light.background}
       />
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-6 mb-6">
+        <View
+          style={{ paddingHorizontal: 16, paddingTop: 24, marginBottom: 24 }}
+        >
           <Text
-            className="text-3xl font-bold mb-2"
-            style={{ color: Colors.light.text }}
+            style={{
+              fontSize: 30,
+              fontWeight: "bold",
+              marginBottom: 8,
+              color: Colors.light.text,
+            }}
           >
             My Account
           </Text>
           <Text
-            className="text-base"
-            style={{ color: Colors.light.mutedForeground }}
+            style={{
+              fontSize: 16,
+              color: Colors.light.mutedForeground,
+            }}
           >
             Manage your profile and preferences
           </Text>
         </View>
 
         {/* Profile Section */}
-        <View className="px-4 mb-6">
+        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
           <View
-            className="p-6 rounded-xl border"
             style={{
+              padding: 24,
+              borderRadius: 12,
+              borderWidth: 1,
               backgroundColor: Colors.light.card,
               borderColor: Colors.light.cardBorder,
             }}
           >
-            <View className="flex-row items-center mb-4">
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
               <Image
                 source={{ uri: user.avatar }}
-                className="w-20 h-20 rounded-full mr-4"
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  marginRight: 16,
+                }}
               />
-              <View className="flex-1">
+              <View style={{ flex: 1 }}>
                 <Text
-                  className="text-2xl font-bold mb-1"
-                  style={{ color: Colors.light.text }}
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    marginBottom: 4,
+                    color: Colors.light.text,
+                  }}
                 >
                   {user.name}
                 </Text>
                 <Text
-                  className="text-base mb-2"
-                  style={{ color: Colors.light.mutedForeground }}
+                  style={{
+                    fontSize: 16,
+                    marginBottom: 8,
+                    color: Colors.light.mutedForeground,
+                  }}
                 >
                   {user.email}
                 </Text>
                 <View
-                  className="px-3 py-1 rounded-full self-start"
-                  style={{ backgroundColor: Colors.light.primary + "20" }}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 4,
+                    borderRadius: 20,
+                    alignSelf: "flex-start",
+                    backgroundColor: Colors.light.primary + "20",
+                  }}
                 >
                   <Text
-                    className="text-sm font-medium"
-                    style={{ color: Colors.light.primary }}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: Colors.light.primary,
+                    }}
                   >
                     {user.membershipType} Member
                   </Text>
@@ -197,8 +235,10 @@ export default function Account(): React.JSX.Element {
               </View>
             </View>
             <Text
-              className="text-sm"
-              style={{ color: Colors.light.mutedForeground }}
+              style={{
+                fontSize: 14,
+                color: Colors.light.mutedForeground,
+              }}
             >
               Member since{" "}
               {new Date(user.memberSince).toLocaleDateString("en-US", {
@@ -211,33 +251,51 @@ export default function Account(): React.JSX.Element {
         </View>
 
         {/* Settings */}
-        <View className="px-4 mb-6">
+        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
           <Text
-            className="text-xl font-semibold mb-4"
-            style={{ color: Colors.light.text }}
+            style={{
+              fontSize: 20,
+              fontWeight: "600",
+              marginBottom: 16,
+              color: Colors.light.text,
+            }}
           >
             Preferences
           </Text>
           <View
-            className="rounded-xl border"
             style={{
+              borderRadius: 12,
+              borderWidth: 1,
               backgroundColor: Colors.light.card,
               borderColor: Colors.light.cardBorder,
             }}
           >
             {settingsItems.map((setting, index, array) => (
               <View key={setting.key}>
-                <View className="flex-row items-center justify-between p-4">
-                  <View className="flex-1">
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: 16,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
                     <Text
-                      className="text-base font-medium mb-1"
-                      style={{ color: Colors.light.text }}
+                      style={{
+                        fontSize: 16,
+                        fontWeight: "500",
+                        marginBottom: 4,
+                        color: Colors.light.text,
+                      }}
                     >
                       {setting.title}
                     </Text>
                     <Text
-                      className="text-sm"
-                      style={{ color: Colors.light.mutedForeground }}
+                      style={{
+                        fontSize: 14,
+                        color: Colors.light.mutedForeground,
+                      }}
                     >
                       {setting.subtitle}
                     </Text>
@@ -258,8 +316,11 @@ export default function Account(): React.JSX.Element {
                 </View>
                 {index < array.length - 1 && (
                   <View
-                    className="h-px mx-4"
-                    style={{ backgroundColor: Colors.light.cardBorder }}
+                    style={{
+                      height: 1,
+                      marginHorizontal: 16,
+                      backgroundColor: Colors.light.cardBorder,
+                    }}
                   />
                 )}
               </View>
@@ -268,16 +329,21 @@ export default function Account(): React.JSX.Element {
         </View>
 
         {/* Menu Items */}
-        <View className="px-4 mb-6">
+        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
           <Text
-            className="text-xl font-semibold mb-4"
-            style={{ color: Colors.light.text }}
+            style={{
+              fontSize: 20,
+              fontWeight: "600",
+              marginBottom: 16,
+              color: Colors.light.text,
+            }}
           >
             More Options
           </Text>
           <View
-            className="rounded-xl border"
             style={{
+              borderRadius: 12,
+              borderWidth: 1,
               backgroundColor: Colors.light.card,
               borderColor: Colors.light.cardBorder,
             }}
@@ -285,13 +351,24 @@ export default function Account(): React.JSX.Element {
             {menuItems.map((item, index) => (
               <View key={item.id}>
                 <TouchableOpacity
-                  className="flex-row items-center p-4"
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 16,
+                  }}
                   onPress={item.onPress}
                   activeOpacity={0.7}
                 >
                   <View
-                    className="w-10 h-10 rounded-full items-center justify-center mr-4"
-                    style={{ backgroundColor: Colors.light.muted }}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: 16,
+                      backgroundColor: Colors.light.muted,
+                    }}
                   >
                     <IconSymbol
                       name={item.icon as any}
@@ -300,8 +377,11 @@ export default function Account(): React.JSX.Element {
                     />
                   </View>
                   <Text
-                    className="flex-1 text-base"
-                    style={{ color: Colors.light.text }}
+                    style={{
+                      flex: 1,
+                      fontSize: 16,
+                      color: Colors.light.text,
+                    }}
                   >
                     {item.title}
                   </Text>
@@ -313,8 +393,11 @@ export default function Account(): React.JSX.Element {
                 </TouchableOpacity>
                 {index < menuItems.length - 1 && (
                   <View
-                    className="h-px ml-14"
-                    style={{ backgroundColor: Colors.light.cardBorder }}
+                    style={{
+                      height: 1,
+                      marginLeft: 56,
+                      backgroundColor: Colors.light.cardBorder,
+                    }}
                   />
                 )}
               </View>
@@ -323,18 +406,23 @@ export default function Account(): React.JSX.Element {
         </View>
 
         {/* Sign Out Button */}
-        <View className="px-4 pb-8">
+        <View style={{ paddingHorizontal: 16, paddingBottom: 32 }}>
           <TouchableOpacity
-            className="py-4 rounded-xl items-center border"
             style={{
+              paddingVertical: 16,
+              borderRadius: 12,
+              alignItems: "center",
+              borderWidth: 1,
               backgroundColor: Colors.light.card,
               borderColor: Colors.light.error + "30",
             }}
             onPress={handleSignOut}
           >
             <Text
-              className="font-semibold"
-              style={{ color: Colors.light.error }}
+              style={{
+                fontWeight: "600",
+                color: Colors.light.error,
+              }}
             >
               Sign Out
             </Text>

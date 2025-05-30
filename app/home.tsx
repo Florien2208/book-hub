@@ -7,13 +7,11 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
- 
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const WelcomeScreen = () => {
- 
   const colors = Colors.light;
 
   return (
@@ -67,7 +65,6 @@ const WelcomeScreen = () => {
                 source={require("../assets/images/1.png")}
                 resizeMode="contain"
                 className="h-32 w-32"
-             
               />
             </View>
           </View>
@@ -197,7 +194,7 @@ const WelcomeScreen = () => {
           </TouchableOpacity>
 
           {/* Secondary Button */}
-          <TouchableOpacity
+          <TouchableOpacity onPress={() => router.replace("/(tabs)")}
             className="rounded-2xl py-4 items-center border-2"
             style={{
               borderColor: colors.cardBorder,
@@ -212,13 +209,6 @@ const WelcomeScreen = () => {
             </Text>
           </TouchableOpacity>
 
-          {/* Footer Text */}
-          <Text
-            className="text-center text-sm mt-6"
-            style={{ color: colors.mutedForeground }}
-          >
-            No credit card required • Free forever plan available
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

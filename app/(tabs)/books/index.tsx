@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,78 +9,51 @@ import {
   StatusBar,
   SafeAreaView,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
+import { Book, mockApi } from "@/api/cataloApi";
 
-// Define the Book interface
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  cover: string;
-  borrowDate: string;
-  returnDate: string;
-  isOverdue: boolean;
-}
 
 // Define the tab type
 type TabType = "current" | "overdue";
 
 export default function MyBooks() {
-  const [borrowedBooks, setBorrowedBooks] = useState([
-    {
-      id: 1,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      cover:
-        "https://i0.wp.com/americanwritersmuseum.org/wp-content/uploads/2018/02/CK-3.jpg?resize=267%2C400&ssl=1",
-      borrowDate: "2024-05-15",
-      returnDate: "2024-05-29",
-      isOverdue: false,
-    },
-    {
-      id: 2,
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      cover:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe7FSXuLfWs-b5JyLrZwGsNM6fk0-ikkBV2g&s",
-      borrowDate: "2024-05-10",
-      returnDate: "2024-05-24",
-      isOverdue: true,
-    },
-    {
-      id: 3,
-      title: "1984",
-      author: "George Orwell",
-      cover:
-        "https://m.media-amazon.com/images/I/61HkdyBpKOL._AC_UF894,1000_QL80_.jpg",
-      borrowDate: "2024-05-20",
-      returnDate: "2024-06-03",
-      isOverdue: false,
-    },
-    {
-      id: 4,
-      title: "Pride and Prejudice",
-      author: "Jane Austen",
-      cover:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRU5AfrvhPMMEL7WHYy-I3HS9VOWRhhiT4McQ&s",
-      borrowDate: "2024-05-18",
-      returnDate: "2024-06-01",
-      isOverdue: false,
-    },
-    
-  ]);
-
+  const [borrowedBooks, setBorrowedBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TabType>("current");
+  const [actionLoading, setActionLoading] = useState<{
+    [key: string]: boolean;
+  }>({});
 
-  const onRefresh = useCallback(() => {
+  // Load books on component mount
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  const loadBooks = async (): Promise<void> => {
+    try {
+      setLoading(true);
+      const response = await mockApi.fetchBorrowedBooks();
+
+      if (response.success && response.data) {
+        setBorrowedBooks(response.data);
+      } else {
+        Alert.alert("Error", response.message || "Failed to load books");
+      }
+    } catch (error) {
+      Alert.alert("Error", "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await loadBooks();
+    setRefreshing(false);
   }, []);
 
   const getDaysUntilReturn = (returnDate: string): number => {
@@ -104,6 +77,13 @@ export default function MyBooks() {
     return `${daysLeft} days left`;
   };
 
+  const setBookActionLoading = (bookId: number, loading: boolean): void => {
+    setActionLoading((prev) => ({
+      ...prev,
+      [`book_${bookId}`]: loading,
+    }));
+  };
+
   const returnBook = (book: Book): void => {
     Alert.alert(
       "Return Book",
@@ -112,13 +92,29 @@ export default function MyBooks() {
         { text: "Cancel", style: "cancel" },
         {
           text: "Return",
-          onPress: () => {
-            const updatedBooks = borrowedBooks.filter((b) => b.id !== book.id);
-            setBorrowedBooks(updatedBooks);
-            Alert.alert(
-              "Success",
-              `"${book.title}" has been returned successfully!`
-            );
+          onPress: async () => {
+            try {
+              setBookActionLoading(book.id, true);
+              const response = await mockApi.returnBook(book.id);
+
+              if (response.success) {
+                // Refresh the books list
+                await loadBooks();
+                Alert.alert(
+                  "Success",
+                  response.message || "Book returned successfully!"
+                );
+              } else {
+                Alert.alert(
+                  "Error",
+                  response.message || "Failed to return book"
+                );
+              }
+            } catch (error) {
+              Alert.alert("Error", "An unexpected error occurred");
+            } finally {
+              setBookActionLoading(book.id, false);
+            }
           },
         },
       ]
@@ -141,25 +137,66 @@ export default function MyBooks() {
         { text: "Cancel", style: "cancel" },
         {
           text: "Renew",
-          onPress: () => {
-            const newReturnDate = new Date(book.returnDate);
-            newReturnDate.setDate(newReturnDate.getDate() + 14);
+          onPress: async () => {
+            try {
+              setBookActionLoading(book.id, true);
+              const response = await mockApi.renewBook(book.id);
 
-            const updatedBooks = borrowedBooks.map((b) =>
-              b.id === book.id
-                ? {
-                    ...b,
-                    returnDate: newReturnDate.toISOString().split("T")[0],
-                  }
-                : b
-            );
-            setBorrowedBooks(updatedBooks);
-            Alert.alert(
-              "Success",
-              `"${
-                book.title
-              }" has been renewed until ${newReturnDate.toLocaleDateString()}!`
-            );
+              if (response.success) {
+                // Refresh the books list
+                await loadBooks();
+                Alert.alert(
+                  "Success",
+                  response.message || "Book renewed successfully!"
+                );
+              } else {
+                Alert.alert(
+                  "Error",
+                  response.message || "Failed to renew book"
+                );
+              }
+            } catch (error) {
+              Alert.alert("Error", "An unexpected error occurred");
+            } finally {
+              setBookActionLoading(book.id, false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleReturnAllBooks = (): void => {
+    Alert.alert(
+      "Return All Books",
+      "Are you sure you want to return all current books?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Return All",
+          onPress: async () => {
+            try {
+              setActionLoading((prev) => ({ ...prev, returnAll: true }));
+              const response = await mockApi.returnAllBooks();
+
+              if (response.success) {
+                // Refresh the books list
+                await loadBooks();
+                Alert.alert(
+                  "Success",
+                  response.message || "All books returned successfully!"
+                );
+              } else {
+                Alert.alert(
+                  "Error",
+                  response.message || "Failed to return all books"
+                );
+              }
+            } catch (error) {
+              Alert.alert("Error", "An unexpected error occurred");
+            } finally {
+              setActionLoading((prev) => ({ ...prev, returnAll: false }));
+            }
           },
         },
       ]
@@ -174,6 +211,7 @@ export default function MyBooks() {
     const daysLeft = getDaysUntilReturn(book.returnDate);
     const statusColor = getStatusColor(book.isOverdue, daysLeft);
     const statusText = getStatusText(book.isOverdue, daysLeft);
+    const bookLoading = actionLoading[`book_${book.id}`] || false;
 
     return (
       <View
@@ -240,34 +278,53 @@ export default function MyBooks() {
             <View className="flex-row space-x-2">
               <TouchableOpacity
                 className="flex-1 py-2 px-3 rounded-lg mr-2"
-                style={{ backgroundColor: Colors.light.primary }}
+                style={{
+                  backgroundColor: bookLoading
+                    ? Colors.light.muted
+                    : Colors.light.primary,
+                  opacity: bookLoading ? 0.7 : 1,
+                }}
                 onPress={() => returnBook(book)}
+                disabled={bookLoading}
               >
-                <Text className="text-white text-center font-medium text-sm">
-                  Return
-                </Text>
+                {bookLoading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white text-center font-medium text-sm">
+                    Return
+                  </Text>
+                )}
               </TouchableOpacity>
               <TouchableOpacity
                 className="flex-1 py-2 px-3 rounded-lg border"
                 style={{
-                  backgroundColor: book.isOverdue
-                    ? Colors.light.muted
-                    : Colors.light.card,
+                  backgroundColor:
+                    book.isOverdue || bookLoading
+                      ? Colors.light.muted
+                      : Colors.light.card,
                   borderColor: Colors.light.cardBorder,
+                  opacity: bookLoading ? 0.7 : 1,
                 }}
                 onPress={() => renewBook(book)}
-                disabled={book.isOverdue}
+                disabled={book.isOverdue || bookLoading}
               >
-                <Text
-                  className="text-center font-medium text-sm"
-                  style={{
-                    color: book.isOverdue
-                      ? Colors.light.mutedForeground
-                      : Colors.light.primary,
-                  }}
-                >
-                  Renew
-                </Text>
+                {bookLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={Colors.light.mutedForeground}
+                  />
+                ) : (
+                  <Text
+                    className="text-center font-medium text-sm"
+                    style={{
+                      color: book.isOverdue
+                        ? Colors.light.mutedForeground
+                        : Colors.light.primary,
+                    }}
+                  >
+                    Renew
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -276,26 +333,24 @@ export default function MyBooks() {
     );
   };
 
-  const handleReturnAllBooks = (): void => {
-    Alert.alert(
-      "Return All Books",
-      "Are you sure you want to return all current books?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Return All",
-          onPress: () => {
-            const updatedBooks = borrowedBooks.filter((book) => book.isOverdue);
-            setBorrowedBooks(updatedBooks);
-            Alert.alert(
-              "Success",
-              "All current books have been returned successfully!"
-            );
-          },
-        },
-      ]
+  if (loading) {
+    return (
+      <SafeAreaView
+        className="flex-1"
+        style={{ backgroundColor: Colors.light.background }}
+      >
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+          <Text
+            className="mt-4 text-lg"
+            style={{ color: Colors.light.mutedForeground }}
+          >
+            Loading your books...
+          </Text>
+        </View>
+      </SafeAreaView>
     );
-  };
+  }
 
   return (
     <SafeAreaView
@@ -501,15 +556,21 @@ export default function MyBooks() {
               style={{
                 backgroundColor: Colors.light.card,
                 borderColor: Colors.light.cardBorder,
+                opacity: actionLoading.returnAll ? 0.7 : 1,
               }}
               onPress={handleReturnAllBooks}
+              disabled={actionLoading.returnAll}
             >
-              <Text
-                className="font-semibold"
-                style={{ color: Colors.light.primary }}
-              >
-                Return All Books
-              </Text>
+              {actionLoading.returnAll ? (
+                <ActivityIndicator size="small" color={Colors.light.primary} />
+              ) : (
+                <Text
+                  className="font-semibold"
+                  style={{ color: Colors.light.primary }}
+                >
+                  Return All Books
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         )}
